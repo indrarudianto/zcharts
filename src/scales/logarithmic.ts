@@ -102,7 +102,7 @@ export default class LogarithmicScale extends Scale {
     const { dataMin, dataMax, userMin, userMax, beginAtZero } = options;
     let min = userMin ?? dataMin;
     let max = dataMax;
-    if (beginAtZero) {
+    if (beginAtZero && min > 0) {
       min = 0.1;
     }
     if (!isNullOrUndef(userMax)) {

@@ -225,7 +225,7 @@ export class LinearScale extends Scale {
     const { dataMin, dataMax, userMin, userMax, beginAtZero } = options;
     let min = userMin ?? dataMin;
     let max = dataMax;
-    if (beginAtZero) {
+    if (beginAtZero && min > 0) {
       min = 0;
     }
     if (!isNullOrUndef(userMax)) {
