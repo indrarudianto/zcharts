@@ -6,32 +6,51 @@ import { LinearScale } from "../scales/linear";
 import { TextStyleOptions } from "../types/textstyle";
 import { Tick } from "../types/tick";
 import LogarithmicScale, { LogTick } from "../scales/logarithmic";
+import { LineStyleOptions } from "../types/linestyle";
 
 export type AxisPosition = "top" | "right" | "bottom" | "left";
 
-export interface SplitLineOptions {
+export interface SplitLine {
   show: boolean;
+  lineStyle: LineStyleOptions;
 }
 
-export interface AxisTickOptions {
+export type SplitLineOptions = Partial<SplitLine>;
+
+export interface AxisTick {
   show: boolean;
   length: number;
   inside: boolean;
   interval: number;
+  lineStyle: LineStyleOptions;
 }
 
-export interface AxisLabelOptions {
+export type AxisTickOptions = Partial<AxisTick>;
+
+export interface AxisLabel {
   show: boolean;
   inside: boolean;
   margin: number;
+  textStyle: TextStyleOptions;
+  formatter: (value: number) => string;
 }
+
+export type AxisLabelOptions = Partial<AxisLabel>;
+
+export interface AxisLine {
+  show: boolean;
+  lineStyle: LineStyleOptions;
+}
+
+export type AxisLineOptions = Partial<AxisLine>;
 
 export interface AxisProps {
   position: AxisPosition;
   inverse: boolean;
   splitLine: SplitLineOptions;
-  axisTick: Partial<AxisTickOptions>;
-  axisLabel: Partial<AxisLabelOptions>;
+  axisTick: AxisTickOptions;
+  axisLabel: AxisLabelOptions;
+  axisLine: AxisLineOptions;
   min: number;
   max: number;
   type: "value" | "log";
@@ -49,22 +68,54 @@ export type AxisOptions = Partial<AxisProps>;
 function mergeDefaultOptions(options: AxisOptions): AxisOptions {
   return zrender.util.merge(
     {
+      inverse: false,
       splitLine: {
         show: false,
+        lineStyle: {
+          color: "#ccc",
+          width: 1,
+          type: "solid",
+        },
       },
       axisTick: {
         show: true,
         length: 5,
         inside: false,
         inteval: "auto",
+        lineStyle: {
+          color: "#333",
+          width: 1,
+          type: "solid",
+        },
       },
       axisLabel: {
         show: true,
         inside: false,
         margin: 8,
+        textStyle: {
+          color: "#333",
+          fontSize: 12,
+          fontFamily: "sans-serif",
+        },
+      },
+      axisLine: {
+        show: true,
+        lineStyle: {
+          color: "#333",
+          width: 1,
+          type: "solid",
+        },
       },
       type: "value",
       beginAtZero: true,
+      name: "",
+      nameLocation: "center",
+      nameGap: 30,
+      nameTextStyle: {
+        color: "#333",
+        fontSize: 12,
+        fontFamily: "sans-serif",
+      },
     },
     options,
     true
@@ -198,6 +249,17 @@ export class Axis {
 
     const tickLabelSize = this._getTickLabelSize();
 
+    const tickStyle: zrender.PathStyleProps = {
+      stroke: axisTickOptions?.lineStyle?.color,
+      lineWidth: axisTickOptions?.lineStyle?.width,
+    };
+
+    const tickLabelStyle: zrender.TextStyleProps = {
+      fill: tickLabelOptions?.textStyle?.color,
+      fontSize: tickLabelOptions?.textStyle?.fontSize,
+      fontFamily: tickLabelOptions?.textStyle?.fontFamily,
+    };
+
     if (this.position === "bottom") {
       ticks.forEach((tick) => {
         const x1 = this.scale.getPixelForValue(tick.value);
@@ -217,9 +279,7 @@ export class Axis {
               x2,
               y2,
             },
-            style: {
-              stroke: "black",
-            },
+            style: tickStyle,
           });
           this.group.add(line);
         }
@@ -237,6 +297,7 @@ export class Axis {
               x: lx,
               y: ly,
               align: "center",
+              ...tickLabelStyle,
             },
           });
           this.group.add(label);
@@ -260,9 +321,7 @@ export class Axis {
               x2,
               y2,
             },
-            style: {
-              stroke: "black",
-            },
+            style: tickStyle,
           });
           this.group.add(line);
         }
@@ -280,6 +339,7 @@ export class Axis {
               x: lx,
               y: ly,
               align: "right",
+              ...tickLabelStyle,
             },
           });
           this.group.add(label);
@@ -299,6 +359,17 @@ export class Axis {
 
     const tickLabelSize = this._getTickLabelSize();
 
+    const tickStyle: zrender.PathStyleProps = {
+      stroke: axisTickOptions?.lineStyle?.color,
+      lineWidth: axisTickOptions?.lineStyle?.width,
+    };
+
+    const tickLabelStyle: zrender.TextStyleProps = {
+      fill: tickLabelOptions?.textStyle?.color,
+      fontSize: tickLabelOptions?.textStyle?.fontSize,
+      fontFamily: tickLabelOptions?.textStyle?.fontFamily,
+    };
+
     if (this.position === "bottom") {
       ticks.forEach((tick) => {
         const x1 = this.scale.getPixelForValue(tick.value);
@@ -318,9 +389,7 @@ export class Axis {
               x2,
               y2,
             },
-            style: {
-              stroke: "black",
-            },
+            style: tickStyle,
           });
           this.group.add(line);
         }
@@ -342,6 +411,7 @@ export class Axis {
               x: lx,
               y: ly,
               align: "center",
+              ...tickLabelStyle,
             },
           });
           this.group.add(label);
@@ -365,9 +435,7 @@ export class Axis {
               x2,
               y2,
             },
-            style: {
-              stroke: "black",
-            },
+            style: tickStyle,
           });
           this.group.add(line);
         }
@@ -389,6 +457,7 @@ export class Axis {
               x: lx,
               y: ly,
               align: "right",
+              ...tickLabelStyle,
             },
           });
           this.group.add(label);
@@ -398,6 +467,10 @@ export class Axis {
   }
 
   private _drawAxisLine() {
+    const options = this.options.axisLine;
+    if (!options?.show) {
+      return;
+    }
     const box = this.layout.getAvailableSpace();
 
     let x1, x2, y1, y2;
@@ -413,6 +486,12 @@ export class Axis {
       y2 = box.y2;
     }
 
+    const style: zrender.PathStyleProps = {
+      stroke: options.lineStyle?.color,
+      lineWidth: options.lineStyle?.width,
+      lineDash: options.lineStyle?.type === "dashed" ? [5, 5] : [],
+    };
+
     const axisLine = new zrender.Line({
       shape: {
         x1,
@@ -420,19 +499,23 @@ export class Axis {
         x2,
         y2,
       },
-      style: {
-        stroke: "black",
-      },
+      style,
     });
 
     this.group.add(axisLine);
   }
 
   private _drawSplitLine() {
-    const showSplitLine = this.options.splitLine?.show;
-    if (!showSplitLine) {
+    const options = this.options.splitLine;
+    if (!options?.show) {
       return;
     }
+
+    const style: zrender.PathStyleProps = {
+      stroke: options.lineStyle?.color,
+      lineWidth: options.lineStyle?.width,
+      lineDash: options.lineStyle?.type === "dashed" ? [5, 5] : [],
+    };
 
     const box = this.layout.getAvailableSpace();
     const ticks = this._ticks;
@@ -452,10 +535,7 @@ export class Axis {
             x2: x0,
             y2: plotArea.y1,
           },
-          style: {
-            stroke: "black",
-            lineDash: [5, 5],
-          },
+          style,
         });
 
         this.group.add(line);
@@ -475,10 +555,7 @@ export class Axis {
             x2: plotArea.x2,
             y2: y0,
           },
-          style: {
-            stroke: "black",
-            lineDash: [5, 5],
-          },
+          style,
         });
 
         this.group.add(line);
@@ -490,6 +567,16 @@ export class Axis {
     const box = this._chart._getPlotArea();
     const options = this.options;
 
+    if (!options.name) {
+      return;
+    }
+
+    const textStyle: zrender.TextStyleProps = {
+      fill: options.nameTextStyle?.color,
+      fontSize: options.nameTextStyle?.fontSize,
+      fontFamily: options.nameTextStyle?.fontFamily,
+    };
+
     if (this.position === "bottom") {
       const label = new zrender.Text({
         style: {
@@ -498,6 +585,7 @@ export class Axis {
           y: box.y2 + (options.nameGap || 25),
           align: "center",
           verticalAlign: "top",
+          ...textStyle,
         },
       });
       this.group.add(label);
@@ -511,6 +599,7 @@ export class Axis {
           y,
           align: "center",
           verticalAlign: "bottom",
+          ...textStyle,
         },
         rotation: Math.PI / 2,
         originX: x,

@@ -50,12 +50,13 @@ export interface ChartOptions {
   locale?: string;
   backgroundColor?: string;
   grid?: GridOptions;
-  xAxis?: Omit<AxisOptions, "position">;
-  yAxis?: Omit<AxisOptions, "position">;
+  xAxis?: AxisOptions;
+  yAxis?: AxisOptions;
   series?: SeriesOptions[];
 }
 
 export class Chart {
+  readonly _dom: HTMLCanvasElement;
   readonly zr: ZRenderType;
   readonly group: Group;
   options: ChartOptions;
@@ -83,7 +84,8 @@ export class Chart {
   readonly __version__ = "0.1.0";
 
   // eslint-disable-next-line no-undef
-  constructor(dom: HTMLElement) {
+  constructor(dom: HTMLCanvasElement) {
+    this._dom = dom;
     this.options = {
       locale: "en",
       title: {
@@ -104,7 +106,7 @@ export class Chart {
       backgroundColor: "transparent",
       grid: {
         show: false,
-        borderColor: "black",
+        borderColor: "#333",
         backgroundColor: "transparent",
       },
     };
@@ -112,6 +114,10 @@ export class Chart {
     // eslint-disable-next-line no-undef
     this.zr = zrender.init(dom);
     this.group = new zrender.Group();
+  }
+
+  get dom(): HTMLCanvasElement {
+    return this._dom;
   }
 
   setOption(options: ChartOptions): void {
@@ -316,6 +322,10 @@ export class Chart {
     });
 
     this.group.add(subtextShape);
+  }
+
+  toDataURL(type?: string | undefined, quality?: any): string {
+    return this._dom.toDataURL(type, quality);
   }
 
   draw(): void {

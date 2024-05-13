@@ -20,9 +20,9 @@ function mergeDefaultOptions(
       symbol: "circle",
       symbolSize: 5,
       itemStyle: {
-        borderColor: '#000',
+        borderColor: "#000",
         borderWidth: 0,
-        borderType: 'solid',
+        borderType: "solid",
       },
       label: {
         show: false,
@@ -50,49 +50,59 @@ export class ScatterSeries<
     this._color = this.options.itemStyle?.color || this._chart._getColor();
   }
 
-  private _drawCircle(cx: number, cy: number): void {
-    const { symbolSize } = this.options;
-    const { _color } = this;
+  private _drawCircle(
+    cx: number,
+    cy: number,
+    r: number,
+    style: zrender.PathStyleProps
+  ): void {
     const circle = new zrender.Circle({
       shape: {
         cx,
         cy,
-        r: symbolSize as number,
+        r,
       },
-      style: {
-        fill: _color,
-      },
+      style,
     });
     this.group.add(circle);
   }
 
-  private _drawRect(cx: number, cy: number): void {
+  private _drawRect(
+    cx: number,
+    cy: number,
+    width: number,
+    height: number,
+    style: zrender.PathStyleProps
+  ): void {
     const rect = new zrender.Rect({
       shape: {
-        x: cx - 5,
-        y: cy - 5,
-        width: 10,
-        height: 10,
+        x: cx - width / 2,
+        y: cy - height / 2,
+        width,
+        height,
       },
-      style: {
-        fill: "blue",
-      },
+      style,
     });
     this.group.add(rect);
   }
 
-  private _drawRoundRect(cx: number, cy: number): void {
+  private _drawRoundRect(
+    cx: number,
+    cy: number,
+    width: number,
+    height: number,
+    radius: number,
+    style: zrender.PathStyleProps
+  ): void {
     const roundRect = new zrender.Rect({
       shape: {
-        x: cx - 5,
-        y: cy - 5,
-        width: 10,
-        height: 10,
-        r: 5,
+        x: cx - width / 2,
+        y: cy - height / 2,
+        width,
+        height,
+        r: radius,
       },
-      style: {
-        fill: "blue",
-      },
+      style,
     });
     this.group.add(roundRect);
   }
@@ -152,24 +162,40 @@ export class ScatterSeries<
       const cx = xScale.getPixelForValue(point.x);
       const cy = yScale.getPixelForValue(point.y);
 
-      switch (options.symbol) {
-        case "circle":
-          this._drawCircle(cx, cy);
-          break;
-        case "rect":
-          this._drawRect(cx, cy);
-          break;
-        case "roundRect":
-          this._drawRoundRect(cx, cy);
-          break;
-        case "triangle":
-          this._drawTriangle(cx, cy);
-          break;
-        case "diamond":
-          this._drawDiamond(cx, cy);
-          break;
-        default:
-          this._drawCircle(cx, cy);
+      const itemStyle = zrender.util.defaults(
+        {
+          fill: this._color,
+        },
+        options.itemStyle || {},
+        true
+      );
+
+      let symbolSize = options.symbolSize;
+
+      const defaultSize = 5;
+      let width = defaultSize;
+      let height = defaultSize;
+      let radius = defaultSize / 2;
+
+      if (Array.isArray(symbolSize)) {
+        if (symbolSize.length === 1) {
+          symbolSize = [symbolSize[0], symbolSize[0]];
+        } else if (symbolSize.length === 2) {
+          width = symbolSize[0];
+          height = symbolSize[1];
+        } else if (symbolSize.length === 3) {
+          width = symbolSize[0];
+          height = symbolSize[1];
+          radius = symbolSize[2];
+        }
+      }
+
+      if (options.symbol === "circle") {
+        this._drawCircle(cx, cy, symbolSize as number, itemStyle);
+      } else if (options.symbol === "rect") {
+        this._drawRect(cx, cy, width, height, itemStyle);
+      } else if (options.symbol === "roundRect") {
+        this._drawRoundRect(cx, cy, width, height, radius, itemStyle);
       }
     });
 
