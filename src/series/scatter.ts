@@ -169,6 +169,8 @@ export class ScatterSeries<
     const xScale = xAxis.scale;
     const yScale = yAxis.scale;
 
+    const { show: showTooltip } = this._chart.options.tooltip || {};
+
     this.data.forEach((point) => {
       const cx = xScale.getPixelForValue(point.x);
       const cy = yScale.getPixelForValue(point.y);
@@ -216,21 +218,25 @@ export class ScatterSeries<
         throw new Error("Invalid symbol type");
       }
 
-      obj.cursor = "default";
+      if (showTooltip) {
+        obj.cursor = "default";
 
-      obj.on("mouseover", (e: zrender.ElementEvent) => {
-        this._chart.tooltip.show({
-          x: e.offsetX,
-          y: e.offsetY,
-          color: this._color,
-          seriesName: this.options.name,
-          data: point,
+        obj.on("mouseover", (e: zrender.ElementEvent) => {
+          this._chart.tooltip.show({
+            x: e.offsetX,
+            y: e.offsetY,
+            color: this._color,
+            seriesName: this.options.name,
+            data: point,
+          });
         });
-      });
 
-      obj.on("mouseout", () => {
-        this._chart.tooltip.hide();
-      });
+        obj.on("mouseout", () => {
+          this._chart.tooltip.hide();
+        });
+      } else {
+        obj.silent = true;
+      }
     });
 
     this._chart.group.add(this.group);
