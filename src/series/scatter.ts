@@ -55,7 +55,7 @@ export class ScatterSeries<
     cy: number,
     r: number,
     style: zrender.PathStyleProps
-  ): void {
+  ): zrender.Circle {
     const circle = new zrender.Circle({
       shape: {
         cx,
@@ -65,6 +65,7 @@ export class ScatterSeries<
       style,
     });
     this.group.add(circle);
+    return circle;
   }
 
   private _drawRect(
@@ -73,7 +74,7 @@ export class ScatterSeries<
     width: number,
     height: number,
     style: zrender.PathStyleProps
-  ): void {
+  ): zrender.Rect {
     const rect = new zrender.Rect({
       shape: {
         x: cx - width / 2,
@@ -84,6 +85,7 @@ export class ScatterSeries<
       style,
     });
     this.group.add(rect);
+    return rect;
   }
 
   private _drawRoundRect(
@@ -93,7 +95,7 @@ export class ScatterSeries<
     height: number,
     radius: number,
     style: zrender.PathStyleProps
-  ): void {
+  ): zrender.Rect {
     const roundRect = new zrender.Rect({
       shape: {
         x: cx - width / 2,
@@ -105,39 +107,48 @@ export class ScatterSeries<
       style,
     });
     this.group.add(roundRect);
+    return roundRect;
   }
 
-  private _drawTriangle(cx: number, cy: number): void {
+  private _drawTriangle(
+    cx: number,
+    cy: number,
+    length: number,
+    style: zrender.PathStyleProps
+  ): zrender.Polygon {
     const triangle = new zrender.Polygon({
       shape: {
         points: [
-          [cx, cy - 5],
-          [cx + 5, cy + 5],
-          [cx - 5, cy + 5],
+          [cx, cy - length],
+          [cx + length, cy + length],
+          [cx - length, cy + length],
         ],
       },
-      style: {
-        fill: "blue",
-      },
+      style: style,
     });
     this.group.add(triangle);
+    return triangle;
   }
 
-  private _drawDiamond(cx: number, cy: number): void {
+  private _drawDiamond(
+    cx: number,
+    cy: number,
+    length: number,
+    style: zrender.PathStyleProps
+  ): zrender.Polygon {
     const diamond = new zrender.Polygon({
       shape: {
         points: [
-          [cx, cy - 5],
-          [cx + 5, cy],
-          [cx, cy + 5],
-          [cx - 5, cy],
+          [cx, cy - length],
+          [cx + length, cy],
+          [cx, cy + length],
+          [cx - length, cy],
         ],
       },
-      style: {
-        fill: "blue",
-      },
+      style,
     });
     this.group.add(diamond);
+    return diamond;
   }
 
   override draw(): void {
@@ -190,13 +201,36 @@ export class ScatterSeries<
         }
       }
 
+      let obj: zrender.Path;
       if (options.symbol === "circle") {
-        this._drawCircle(cx, cy, symbolSize as number, itemStyle);
+        obj = this._drawCircle(cx, cy, symbolSize as number, itemStyle);
       } else if (options.symbol === "rect") {
-        this._drawRect(cx, cy, width, height, itemStyle);
+        obj = this._drawRect(cx, cy, width, height, itemStyle);
       } else if (options.symbol === "roundRect") {
-        this._drawRoundRect(cx, cy, width, height, radius, itemStyle);
+        obj = this._drawRoundRect(cx, cy, width, height, radius, itemStyle);
+      } else if (options.symbol === "triangle") {
+        obj = this._drawTriangle(cx, cy, width, itemStyle);
+      } else if (options.symbol === "diamond") {
+        obj = this._drawDiamond(cx, cy, width, itemStyle);
+      } else {
+        throw new Error("Invalid symbol type");
       }
+
+      obj.cursor = "default";
+
+      obj.on("mouseover", (e: zrender.ElementEvent) => {
+        this._chart.tooltip.show({
+          x: e.offsetX,
+          y: e.offsetY,
+          color: this._color,
+          seriesName: this.options.name,
+          data: point,
+        });
+      });
+
+      obj.on("mouseout", () => {
+        this._chart.tooltip.hide();
+      });
     });
 
     this._chart.group.add(this.group);

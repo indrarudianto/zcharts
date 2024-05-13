@@ -136,6 +136,7 @@ export class Axis {
     this._chart = chart;
     this.options = mergeDefaultOptions(options);
     this.group = new zrender.Group();
+    this.group.silent = true;
 
     const scaleOptions: ScaleOptions = {
       orientation:

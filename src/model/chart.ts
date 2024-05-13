@@ -7,6 +7,7 @@ import { LineSeries } from "../series/line";
 import { ScatterSeries } from "../series/scatter";
 import { Bound } from "../types/geometric";
 import { TextStyleOptions } from "../types/textstyle";
+import { Tooltip, TooltipFormatterOptions } from "./tooltip";
 
 export interface TitleOptions {
   text: string;
@@ -31,6 +32,11 @@ export interface GridOptions {
   show?: boolean;
 }
 
+export interface TooltipOptions {
+  show?: boolean;
+  formatter?: (options: TooltipFormatterOptions) => string;
+}
+
 export type AxisMap = Record<AxisPosition, Axis | undefined>;
 
 const SeriesControllerMap: Record<string, typeof Series> = {
@@ -53,6 +59,7 @@ export interface ChartOptions {
   xAxis?: AxisOptions;
   yAxis?: AxisOptions;
   series?: SeriesOptions[];
+  tooltip?: TooltipOptions;
 }
 
 export class Chart {
@@ -67,6 +74,7 @@ export class Chart {
     left: undefined,
   };
   _series: Series[] = [];
+  readonly tooltip: Tooltip;
   private _colorIndex = 0;
   private _colorPalette = [
     "#5470c6",
@@ -109,7 +117,12 @@ export class Chart {
         borderColor: "#333",
         backgroundColor: "transparent",
       },
+      tooltip: {
+        show: true,
+      },
     };
+
+    this.tooltip = new Tooltip(this);
 
     // eslint-disable-next-line no-undef
     this.zr = zrender.init(dom);
@@ -237,6 +250,7 @@ export class Chart {
         stroke: borderColor,
       },
     });
+    rect.silent = true;
     this.group.add(rect);
   }
 
@@ -301,6 +315,7 @@ export class Chart {
         verticalAlign: "bottom",
       },
     });
+    textShape.silent = true;
     this.group.add(textShape);
 
     if (!title.subtext) {
@@ -320,7 +335,7 @@ export class Chart {
         verticalAlign: "top",
       },
     });
-
+    subtextShape.silent = true;
     this.group.add(subtextShape);
   }
 
