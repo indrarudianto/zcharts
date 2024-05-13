@@ -356,8 +356,8 @@ export class Chart {
     this.zr.add(this.group);
 
     this._drawBackground();
-    this._drawGrid();
     this._drawAxis();
+    this._drawGrid();
     this._drawSeries();
     this._drawTitle();
   }
