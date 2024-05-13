@@ -62,6 +62,13 @@ export interface ChartOptions {
   tooltip?: TooltipOptions;
 }
 
+export interface ChartInitOptions {
+  renderer?: "canvas" | "svg";
+  devicePixelRatio?: number;
+  width?: number | string;
+  height?: number | string;
+}
+
 export class Chart {
   readonly _dom: HTMLCanvasElement;
   readonly zr: ZRenderType;
@@ -92,7 +99,7 @@ export class Chart {
   readonly __version__ = "0.1.0";
 
   // eslint-disable-next-line no-undef
-  constructor(dom: HTMLCanvasElement) {
+  constructor(dom: HTMLCanvasElement, options?: ChartInitOptions) {
     this._dom = dom;
     this.options = {
       locale: "en",
@@ -125,7 +132,7 @@ export class Chart {
     this.tooltip = new Tooltip(this);
 
     // eslint-disable-next-line no-undef
-    this.zr = zrender.init(dom);
+    this.zr = zrender.init(dom, options);
     this.group = new zrender.Group();
   }
 
