@@ -61,6 +61,13 @@ export class Tooltip {
       },
     });
 
+    const rect = text.getBoundingRect();
+    if (x + rect.width + 10 > this._chart.getWidth()) {
+      text.setStyle({
+        x: x - rect.width,
+      });
+    }
+
     this._group.add(text);
     this._chart.zr.add(this._group);
   }
