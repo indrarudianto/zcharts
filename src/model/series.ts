@@ -15,16 +15,6 @@ export interface SeriesOptions {
   visible?: boolean;
 }
 
-// const mergeDefaultOptions = (options: SeriesOptions): SeriesOptions => {
-//   return zrender.util.merge(
-//     {
-//       visible: true,
-//     },
-//     options,
-//     true
-//   );
-// };
-
 export class Series<T extends SeriesOptions = SeriesOptions> {
   private _options: SeriesOptions;
   protected _chart: Chart;
