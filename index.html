@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + TS</title>
+  </head>
+  <body>
+    <canvas id="canvas" width="500" height="500"></canvas>  
+    <script type="module" src="/src/index.ts"></script>
+    <script type="module">
+      import {Chart} from '/src/index.ts';
+
+      const data = [];
+
+      for (let i = 0; i < 100; i++) {
+        data.push({ x: Math.random() * 100, y: Math.random() * 100 });
+      }
+
+      const dom = document.getElementById("canvas");
+      const chart = new Chart(dom);
+      chart.setOption({
+        backgroundColor: "#d3d3d3",
+        title: {
+          text: "Scatter Plot",
+          subtext: "Random data",
+        },
+        grid: {
+          show: true,
+          left: 80,
+          right: 50,
+          top: 50,
+          bottom: 50,
+        },
+        yAxis: {
+          axisTick: {
+            // inside: true,
+            // interval: 10,
+          },
+          axisLabel: {
+            // inside: true,
+          },
+          name: "y-axis",
+          // min: 0,
+          // max: 100,
+          type: 'value'
+        },
+        xAxis: {
+          axisTick: {
+            // inside: true,
+            // interval: 10,
+          },
+          axisLabel: {
+            // inside: true,
+          },
+          name: "x-axis",
+          // min: 0,
+          // max: 120,
+          type: 'value',
+        },
+        series: [
+          {
+            type: "scatter",
+            data,
+          },
+        ],
+      });
+      chart.draw();
+    </script>
+  </body>
+</html>
