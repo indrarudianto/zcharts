@@ -1,5 +1,3 @@
-import { Axis } from "../model/axis";
-import { Chart } from "../model/chart";
 import { Scale, ScaleOptions } from "../model/scale";
 import { MinMax } from "../types/geometric";
 import { Tick } from "../types/tick";
@@ -93,10 +91,6 @@ function generateTicks(
 
 export default class LogarithmicScale extends Scale {
   static id = "logarithmic";
-
-  constructor(chart: Chart, axis: Axis, options: ScaleOptions) {
-    super(chart, axis, options);
-  }
 
   override determineDataLimits(options: ScaleOptions): MinMax {
     const { dataMin, dataMax, userMin, userMax, beginAtZero } = options;

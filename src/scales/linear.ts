@@ -1,5 +1,3 @@
-import { Axis } from "../model/axis";
-import { Chart } from "../model/chart";
 import { Scale, ScaleOptions } from "../model/scale";
 import { MinMax } from "../types/geometric";
 import { Tick } from "../types/tick";
@@ -216,10 +214,6 @@ export function relativeLabelSize(
 
 export class LinearScale extends Scale {
   static id = "linear";
-
-  constructor(chart: Chart, axis: Axis, options: ScaleOptions) {
-    super(chart, axis, options);
-  }
 
   override determineDataLimits(options: ScaleOptions): MinMax {
     const { dataMin, dataMax, userMin, userMax, beginAtZero } = options;

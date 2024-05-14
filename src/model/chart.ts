@@ -4,6 +4,7 @@ import { LineSeries } from "../series/line";
 import { ScatterSeries } from "../series/scatter";
 import { Bound } from "../types/geometric";
 import { TextStyleOptions } from "../types/textstyle";
+import { isFinite } from "../utils/common";
 import { isNumber } from "../utils/math";
 import { getZoomExtent } from "../utils/zoom";
 import { Axis, AxisOptions, AxisPosition } from "./axis";
@@ -141,6 +142,7 @@ export class Chart {
         mode: "xy",
       },
     };
+    this.setOption(this.options);
 
     this.tooltip = new Tooltip(this);
 
@@ -353,6 +355,11 @@ export class Chart {
         });
     });
 
+    xmin = isFinite(xmin) ? xmin : 0;
+    xmax = isFinite(xmax) ? xmax : 1;
+    ymin = isFinite(ymin) ? ymin : 0;
+    ymax = isFinite(ymax) ? ymax : 1;
+
     return { xmin, xmax, ymin, ymax };
   }
 
@@ -435,8 +442,8 @@ export class Chart {
 
     this._drawBackground();
     this._drawAxis();
-    this._drawGrid();
-    this._drawSeries();
-    this._drawTitle();
+    // this._drawGrid();
+    // this._drawSeries();
+    // this._drawTitle();
   }
 }
