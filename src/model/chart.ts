@@ -133,6 +133,10 @@ export class Chart {
         show: false,
         borderColor: "#333",
         backgroundColor: "transparent",
+        left: 80,
+        right: 50,
+        top: 50,
+        bottom: 50,
       },
       tooltip: {
         show: true,
