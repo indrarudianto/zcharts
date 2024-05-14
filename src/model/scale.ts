@@ -51,6 +51,12 @@ export class Scale {
     this.max = max;
   }
 
+  reset(): void {
+    const { min, max } = this.determineDataLimits(this.options);
+    this.min = min;
+    this.max = max;
+  }
+
   isHorizontal(): boolean {
     return this.options.orientation === "horizontal";
   }

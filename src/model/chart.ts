@@ -178,6 +178,25 @@ export class Chart {
     this.zr.clear();
   }
 
+  dispose(): void {
+    this.zr.dispose();
+  }
+
+  resetZoom(): void {
+    const xAxis = this._axis.bottom;
+    const yAxis = this._axis.left;
+    if (xAxis) {
+      xAxis.getScale().reset();
+      xAxis.draw();
+    }
+    if (yAxis) {
+      yAxis.getScale().reset();
+      yAxis.draw();
+    }
+
+    this._drawSeries();
+  }
+
   private _onWheel(event: zrender.ElementEvent) {
     const { enabled, mode } = this.options.zoom || ({} as ZoomOptions);
     if (!enabled) return;
