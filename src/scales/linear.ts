@@ -314,6 +314,6 @@ export class LinearScale extends Scale {
       return this.min;
     }
 
-    return this.min + range * (pixel / this.axis.getWidth());
+    return this.getDecimalForPixel(pixel) * range + this.min;
   }
 }

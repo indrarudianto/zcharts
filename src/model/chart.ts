@@ -8,6 +8,7 @@ import { ScatterSeries } from "../series/scatter";
 import { Bound } from "../types/geometric";
 import { TextStyleOptions } from "../types/textstyle";
 import { Tooltip, TooltipFormatterOptions } from "./tooltip";
+import { getZoomExtent } from "../utils/zoom";
 
 export interface TitleOptions {
   text: string;
@@ -37,6 +38,11 @@ export interface TooltipOptions {
   formatter?: (options: TooltipFormatterOptions) => string;
 }
 
+export interface ZoomOptions {
+  enabled?: boolean;
+  mode?: "x" | "y" | "xy";
+}
+
 export type AxisMap = Record<AxisPosition, Axis | undefined>;
 
 const SeriesControllerMap: Record<string, typeof Series> = {
@@ -60,6 +66,7 @@ export interface ChartOptions {
   yAxis?: AxisOptions;
   series?: SeriesOptions[];
   tooltip?: TooltipOptions;
+  zoom?: ZoomOptions;
 }
 
 export interface ChartInitOptions {
@@ -73,6 +80,7 @@ export class Chart {
   readonly _dom: HTMLCanvasElement;
   readonly zr: ZRenderType;
   readonly group: Group;
+  readonly seriesGroup: Group;
   options: ChartOptions;
   _axis: AxisMap = {
     top: undefined,
@@ -127,6 +135,10 @@ export class Chart {
       tooltip: {
         show: true,
       },
+      zoom: {
+        enabled: true,
+        mode: "xy",
+      },
     };
 
     this.tooltip = new Tooltip(this);
@@ -134,6 +146,9 @@ export class Chart {
     // eslint-disable-next-line no-undef
     this.zr = zrender.init(dom, options);
     this.group = new zrender.Group();
+    this.seriesGroup = new zrender.Group();
+
+    this.zr.on("mousewheel", this._onWheel.bind(this));
   }
 
   get dom(): HTMLCanvasElement {
@@ -161,6 +176,42 @@ export class Chart {
   clear(): void {
     this.group.removeAll();
     this.zr.clear();
+  }
+
+  private _onWheel(event: zrender.ElementEvent) {
+    const { enabled, mode } = this.options.zoom || ({} as ZoomOptions);
+    if (!enabled) return;
+
+    const zoomXEnabled = mode?.includes("x");
+    const zoomYEnabled = mode?.includes("y");
+
+    const delta = event.wheelDelta;
+    const scale = delta > 0 ? 1.1 : 0.9;
+    const box = this._getPlotArea();
+    const posX = event.offsetX;
+    const posY = event.offsetY;
+    if (posX < box.x1 || posX > box.x2 || posY < box.y1 || posY > box.y2) {
+      return;
+    }
+
+    const xAxis = this._axis.bottom;
+    const yAxis = this._axis.left;
+    if (xAxis && zoomXEnabled) {
+      const [minX, maxX] = xAxis.getScale().getExtent();
+      const valueX = xAxis.getScale().getValueForPixel(posX);
+      const [newMinX, newMaxX] = getZoomExtent(valueX, minX, maxX, scale);
+      xAxis.getScale().setExtent(newMinX, newMaxX);
+      xAxis.draw();
+    }
+    if (yAxis && zoomYEnabled) {
+      const [minY, maxY] = yAxis.getScale().getExtent();
+      const valueY = yAxis.getScale().getValueForPixel(posY);
+      const [newMinY, newMaxY] = getZoomExtent(valueY, minY, maxY, scale);
+      yAxis.getScale().setExtent(newMinY, newMaxY);
+      yAxis.draw();
+    }
+
+    this._drawSeries();
   }
 
   _getLayout(): Layout {
@@ -288,6 +339,7 @@ export class Chart {
   }
 
   _drawSeries(): void {
+    this.seriesGroup.removeAll();
     const series = this.options.series || [];
 
     series.forEach((s) => {
@@ -302,6 +354,8 @@ export class Chart {
       const controller = new Controller(this, options);
       controller.draw();
     });
+
+    this.group.add(this.seriesGroup);
   }
 
   _drawTitle(): void {

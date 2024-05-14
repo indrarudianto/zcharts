@@ -42,6 +42,15 @@ export class Scale {
     return this.max - this.min;
   }
 
+  getExtent(): [number, number] {
+    return [this.min, this.max];
+  }
+
+  setExtent(min: number, max: number): void {
+    this.min = min;
+    this.max = max;
+  }
+
   isHorizontal(): boolean {
     return this.options.orientation === "horizontal";
   }

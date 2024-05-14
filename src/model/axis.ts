@@ -195,6 +195,10 @@ export class Axis {
     return this.layout.height;
   }
 
+  getScale(): Scale {
+    return this.scale;
+  }
+
   draw() {
     this.group.removeAll();
 

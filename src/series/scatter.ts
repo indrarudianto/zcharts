@@ -64,7 +64,6 @@ export class ScatterSeries<
       },
       style,
     });
-    this.group.add(circle);
     return circle;
   }
 
@@ -84,7 +83,6 @@ export class ScatterSeries<
       },
       style,
     });
-    this.group.add(rect);
     return rect;
   }
 
@@ -106,7 +104,6 @@ export class ScatterSeries<
       },
       style,
     });
-    this.group.add(roundRect);
     return roundRect;
   }
 
@@ -126,7 +123,6 @@ export class ScatterSeries<
       },
       style: style,
     });
-    this.group.add(triangle);
     return triangle;
   }
 
@@ -147,7 +143,6 @@ export class ScatterSeries<
       },
       style,
     });
-    this.group.add(diamond);
     return diamond;
   }
 
@@ -171,9 +166,15 @@ export class ScatterSeries<
 
     const { show: showTooltip } = this._chart.options.tooltip || {};
 
+    const box = this._chart._getPlotArea();
+
     this.data.forEach((point) => {
       const cx = xScale.getPixelForValue(point.x);
       const cy = yScale.getPixelForValue(point.y);
+
+      if (cx < box.x1 || cx > box.x2 || cy < box.y1 || cy > box.y2) {
+        return;
+      }
 
       const itemStyle = zrender.util.defaults(
         {
@@ -237,8 +238,10 @@ export class ScatterSeries<
       } else {
         obj.silent = true;
       }
+
+      this.group.add(obj);
     });
 
-    this._chart.group.add(this.group);
+    this._chart.seriesGroup.add(this.group);
   }
 }
