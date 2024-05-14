@@ -4,6 +4,7 @@ import { LineSeries } from "../series/line";
 import { ScatterSeries } from "../series/scatter";
 import { Bound } from "../types/geometric";
 import { TextStyleOptions } from "../types/textstyle";
+import { isNumber } from "../utils/math";
 import { getZoomExtent } from "../utils/zoom";
 import { Axis, AxisOptions, AxisPosition } from "./axis";
 import { Layout, Padding } from "./layout";
@@ -340,12 +341,16 @@ export class Chart {
 
     series.forEach((s) => {
       const data = s.data || [];
-      data.forEach((d) => {
-        xmin = Math.min(xmin, d.x);
-        xmax = Math.max(xmax, d.x);
-        ymin = Math.min(ymin, d.y);
-        ymax = Math.max(ymax, d.y);
-      });
+      data
+        .filter((d) => {
+          return isNumber(d.x) && isNumber(d.y);
+        })
+        .forEach((d) => {
+          xmin = Math.min(xmin, d.x);
+          xmax = Math.max(xmax, d.x);
+          ymin = Math.min(ymin, d.y);
+          ymax = Math.max(ymax, d.y);
+        });
     });
 
     return { xmin, xmax, ymin, ymax };
