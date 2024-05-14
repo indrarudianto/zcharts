@@ -52,7 +52,7 @@ function generateTicks(
   { min, max }: MinMax
 ): LogTick[] {
   min = finiteOrDefault(generationOptions.min, min);
-  const ticks = [];
+  const ticks: LogTick[] = [];
   const minExp = log10Floor(min);
   let exp = startExp(min, max);
   let precision = exp < 0 ? Math.pow(10, Math.abs(exp)) : 1;

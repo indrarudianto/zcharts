@@ -54,7 +54,7 @@ export function generateTicks(
   generationOptions: BuildTickOptions,
   dataRange: DataRange
 ): Tick[] {
-  const ticks = [];
+  const ticks: Tick[] = [];
   // To get a "nice" value for the tick spacing, we will use the appropriately named
   // "nice number" algorithm. See https://stackoverflow.com/questions/8506881/nice-label-algorithm-for-charts-with-minimum-ticks
   // for details.
