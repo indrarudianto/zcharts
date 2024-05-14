@@ -446,8 +446,8 @@ export class Chart {
 
     this._drawBackground();
     this._drawAxis();
-    // this._drawGrid();
-    // this._drawSeries();
-    // this._drawTitle();
+    this._drawGrid();
+    this._drawSeries();
+    this._drawTitle();
   }
 }
