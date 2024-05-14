@@ -1,7 +1,7 @@
-import { Tick, TickOptions } from "../types/tick";
-import { Chart } from "./chart";
-import { Axis } from "./axis";
 import { MinMax } from "../types/geometric";
+import { Tick, TickOptions } from "../types/tick";
+import { Axis } from "./axis";
+import { Chart } from "./chart";
 
 export interface ScaleOptions {
   orientation: "horizontal" | "vertical";

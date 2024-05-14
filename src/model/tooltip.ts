@@ -1,7 +1,7 @@
 import * as zrender from "zrender";
+import { formatNumber } from "../utils/intl";
 import { Chart } from "./chart";
 import { DataPoint } from "./series";
-import { formatNumber } from "../utils/intl";
 
 export interface TooltipShowOptions {
   x: number;

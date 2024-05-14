@@ -1,8 +1,8 @@
 import * as zrender from "zrender";
-import { Series, SeriesOptions } from "../model/series";
-import { LineStyleOptions } from "../types/linestyle";
-import { LabelOptions } from "../types/label";
 import { Chart } from "../model/chart";
+import { Series, SeriesOptions } from "../model/series";
+import { LabelOptions } from "../types/label";
+import { LineStyleOptions } from "../types/linestyle";
 
 export interface LineSeriesOptions extends SeriesOptions {
   lineStyle?: LineStyleOptions;

@@ -9,8 +9,8 @@ import { formatNumber } from "../utils/intl";
 import {
   almostEquals,
   almostWhole,
-  niceNum,
   decimalPlaces,
+  niceNum,
   toRadians,
 } from "../utils/math";
 

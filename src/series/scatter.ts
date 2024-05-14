@@ -1,6 +1,6 @@
 import * as zrender from "zrender";
-import { Series, SeriesOptions } from "../model/series";
 import { Chart } from "../model/chart";
+import { Series, SeriesOptions } from "../model/series";
 import { ItemStyleOptions } from "../types/itemstyle";
 import { LabelOptions } from "../types/label";
 

@@ -1,12 +1,12 @@
 import * as zrender from "zrender";
+import { LinearScale } from "../scales/linear";
+import LogarithmicScale, { LogTick } from "../scales/logarithmic";
+import { LineStyleOptions } from "../types/linestyle";
+import { TextStyleOptions } from "../types/textstyle";
+import { Tick } from "../types/tick";
 import { Chart } from "./chart";
 import { Layout } from "./layout";
 import { Scale, ScaleOptions } from "./scale";
-import { LinearScale } from "../scales/linear";
-import { TextStyleOptions } from "../types/textstyle";
-import { Tick } from "../types/tick";
-import LogarithmicScale, { LogTick } from "../scales/logarithmic";
-import { LineStyleOptions } from "../types/linestyle";
 
 export type AxisPosition = "top" | "right" | "bottom" | "left";
 

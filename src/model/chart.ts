@@ -1,14 +1,14 @@
 import * as zrender from "zrender";
-import { ZRenderType, Group } from "zrender";
-import { Layout, Padding } from "./layout";
-import { Axis, AxisPosition, AxisOptions } from "./axis";
-import { Series, SeriesOptions } from "./series";
+import { Group, ZRenderType } from "zrender";
 import { LineSeries } from "../series/line";
 import { ScatterSeries } from "../series/scatter";
 import { Bound } from "../types/geometric";
 import { TextStyleOptions } from "../types/textstyle";
-import { Tooltip, TooltipFormatterOptions } from "./tooltip";
 import { getZoomExtent } from "../utils/zoom";
+import { Axis, AxisOptions, AxisPosition } from "./axis";
+import { Layout, Padding } from "./layout";
+import { Series, SeriesOptions } from "./series";
+import { Tooltip, TooltipFormatterOptions } from "./tooltip";
 
 export interface TitleOptions {
   text: string;
