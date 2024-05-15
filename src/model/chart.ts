@@ -208,14 +208,28 @@ export class Chart {
     if (xAxis && zoomXEnabled) {
       const [minX, maxX] = xAxis.getScale().getExtent();
       const valueX = xAxis.getScale().getValueForPixel(posX);
-      const [newMinX, newMaxX] = getZoomExtent(valueX, minX, maxX, scale);
+      const isLogarithmic = xAxis.options.type === "log";
+      const [newMinX, newMaxX] = getZoomExtent(
+        valueX,
+        minX,
+        maxX,
+        scale,
+        isLogarithmic
+      );
       xAxis.getScale().setExtent(newMinX, newMaxX);
       xAxis.draw();
     }
     if (yAxis && zoomYEnabled) {
       const [minY, maxY] = yAxis.getScale().getExtent();
       const valueY = yAxis.getScale().getValueForPixel(posY);
-      const [newMinY, newMaxY] = getZoomExtent(valueY, minY, maxY, scale);
+      const isLogarithmic = yAxis.options.type === "log";
+      const [newMinY, newMaxY] = getZoomExtent(
+        valueY,
+        minY,
+        maxY,
+        scale,
+        isLogarithmic
+      );
       yAxis.getScale().setExtent(newMinY, newMaxY);
       yAxis.draw();
     }
