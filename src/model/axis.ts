@@ -527,18 +527,20 @@ export class Axis {
     const plotArea = this._chart._getPlotArea();
 
     if (this.position === "bottom") {
-      const deltaPixel = box.width / (this.scale.max - this.scale.min);
       ticks.forEach((tick, index) => {
         if (index === 0) {
           return;
         }
-        const x0 = box.x1 + (tick.value - this.scale.min) * deltaPixel;
+        const x1 = this.scale.getPixelForValue(tick.value);
+        const y1 = box.y1;
+        const x2 = x1;
+        const y2 = plotArea.y1;
         const line = new zrender.Line({
           shape: {
-            x1: x0,
-            y1: box.y1,
-            x2: x0,
-            y2: plotArea.y1,
+            x1,
+            y1,
+            x2,
+            y2,
           },
           style,
         });
@@ -546,19 +548,21 @@ export class Axis {
         this.group.add(line);
       });
     } else if (this.position === "left") {
-      const deltaPixel = box.height / (this.scale.max - this.scale.min);
       ticks.forEach((tick, index) => {
         // Exclude the first index
         if (index === 0) {
           return;
         }
-        const y0 = box.y2 - (tick.value - this.scale.min) * deltaPixel;
+        const x1 = box.x2;
+        const y1 = this.scale.getPixelForValue(tick.value);
+        const x2 = plotArea.x2;
+        const y2 = y1;
         const line = new zrender.Line({
           shape: {
-            x1: box.x2,
-            y1: y0,
-            x2: plotArea.x2,
-            y2: y0,
+            x1,
+            y1,
+            x2,
+            y2,
           },
           style,
         });
