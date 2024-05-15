@@ -3,6 +3,7 @@ import { Chart } from "../model/chart";
 import { Series, SeriesOptions } from "../model/series";
 import { ItemStyleOptions } from "../types/itemstyle";
 import { LabelOptions } from "../types/label";
+import { generateRandomColor } from "../utils/color";
 import { isNumber } from "../utils/math";
 
 export interface ScatterSeriesOptions extends SeriesOptions {
@@ -15,7 +16,7 @@ export interface ScatterSeriesOptions extends SeriesOptions {
 function mergeDefaultOptions(
   options: ScatterSeriesOptions
 ): ScatterSeriesOptions {
-  return zrender.util.defaults(
+  return zrender.util.merge(
     {
       visible: true,
       symbol: "circle",
@@ -48,7 +49,7 @@ export class ScatterSeries<
 
   constructor(chart: Chart, options: ScatterSeriesOptions) {
     super(chart, mergeDefaultOptions(options) as T);
-    this._color = this.options.itemStyle?.color || this._chart._getColor();
+    this._color = this.options.itemStyle?.color || generateRandomColor();
   }
 
   private _drawCircle(

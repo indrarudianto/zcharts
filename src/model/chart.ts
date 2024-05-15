@@ -78,76 +78,63 @@ export interface ChartInitOptions {
   height?: number | string;
 }
 
+const defaultOptions: ChartOptions = {
+  locale: "en",
+  title: {
+    text: "",
+    margin: 18,
+    textStyle: {
+      color: "#333",
+      fontSize: 18,
+      fontFamily: "sans-serif",
+    },
+    subtext: "",
+    subtextStyle: {
+      color: "#aaa",
+      fontSize: 12,
+      fontFamily: "sans-serif",
+    },
+  },
+  backgroundColor: "transparent",
+  grid: {
+    show: false,
+    borderColor: "#333",
+    backgroundColor: "transparent",
+    left: 80,
+    right: 50,
+    top: 50,
+    bottom: 50,
+  },
+  tooltip: {
+    show: true,
+  },
+  zoom: {
+    enabled: true,
+    mode: "xy",
+  },
+};
+
 export class Chart {
-  readonly _dom: HTMLCanvasElement;
+  readonly dom: HTMLCanvasElement;
   readonly zr: ZRenderType;
   readonly group: Group;
   readonly seriesGroup: Group;
   options: ChartOptions;
-  _axis: AxisMap = {
+  readonly _axis: AxisMap = {
     top: undefined,
     right: undefined,
     bottom: undefined,
     left: undefined,
   };
-  _series: Series[] = [];
+  readonly _series: Series[] = [];
   readonly tooltip: Tooltip;
-  private _colorIndex = 0;
-  private _colorPalette = [
-    "#5470c6",
-    "#91cc75",
-    "#fac858",
-    "#ee6666",
-    "#73c0de",
-    "#3ba272",
-    "#fc8452",
-    "#9a60b4",
-    "#ea7ccc",
-    "#fe9a65",
-  ];
 
   readonly __version__ = "0.1.0";
 
   // eslint-disable-next-line no-undef
   constructor(dom: HTMLCanvasElement, options?: ChartInitOptions) {
-    this._dom = dom;
-    this.options = {
-      locale: "en",
-      title: {
-        text: "",
-        margin: 18,
-        textStyle: {
-          color: "#333",
-          fontSize: 18,
-          fontFamily: "sans-serif",
-        },
-        subtext: "",
-        subtextStyle: {
-          color: "#aaa",
-          fontSize: 12,
-          fontFamily: "sans-serif",
-        },
-      },
-      backgroundColor: "transparent",
-      grid: {
-        show: false,
-        borderColor: "#333",
-        backgroundColor: "transparent",
-        left: 80,
-        right: 50,
-        top: 50,
-        bottom: 50,
-      },
-      tooltip: {
-        show: true,
-      },
-      zoom: {
-        enabled: true,
-        mode: "xy",
-      },
-    };
-    this.setOption(this.options);
-
+    this.dom = dom;
+    this.options = {};
     this.tooltip = new Tooltip(this);
 
     // eslint-disable-next-line no-undef
@@ -158,12 +145,8 @@ export class Chart {
     this.zr.on("mousewheel", this._onWheel.bind(this));
   }
 
-  get dom(): HTMLCanvasElement {
-    return this._dom;
-  }
-
   setOption(options: ChartOptions): void {
-    this.options = zrender.util.merge(this.options, options, true);
+    this.options = zrender.util.merge(defaultOptions, options, true);
   }
 
   getWidth(): number {
@@ -367,12 +350,6 @@ export class Chart {
     return { xmin, xmax, ymin, ymax };
   }
 
-  _getColor(): string {
-    const color = this._colorPalette[this._colorIndex];
-    this._colorIndex = (this._colorIndex + 1) % this._colorPalette.length;
-    return color;
-  }
-
   _drawSeries(): void {
     this.seriesGroup.removeAll();
     const series = this.options.series || [];
@@ -436,7 +413,7 @@ export class Chart {
   }
 
   toDataURL(type?: string | undefined, quality?: any): string {
-    return this._dom.toDataURL(type, quality);
+    return this.dom.toDataURL(type, quality);
   }
 
   draw(): void {
