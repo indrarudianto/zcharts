@@ -151,6 +151,7 @@ export class Axis {
         step: this.options.axisTick?.interval,
       },
       beginAtZero: this.options.beginAtZero,
+      formatter: this.options.axisLabel?.formatter,
     };
     if (this.options.type === "value") {
       this.scale = new LinearScale(chart, this, scaleOptions);

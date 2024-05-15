@@ -286,6 +286,10 @@ export class LinearScale extends Scale {
   }
 
   override getLabelForValue(value: number): string {
+    const formatter = this.options.formatter
+    if (formatter) {
+      return formatter(value);
+    }
     return formatNumber(
       value,
       this.chart.options.locale || "en-US",

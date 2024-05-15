@@ -12,6 +12,7 @@ export interface ScaleOptions {
   bounds?: "ticks" | "data";
   ticks?: TickOptions;
   beginAtZero?: boolean;
+  formatter?: (value: number) => string;
 }
 
 export class Scale {
@@ -62,6 +63,10 @@ export class Scale {
   }
 
   getLabelForValue(value: number): string {
+    const formatter = this.options.formatter;
+    if (formatter) {
+      return formatter(value);
+    }
     return value.toString();
   }
 

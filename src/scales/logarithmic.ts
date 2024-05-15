@@ -120,6 +120,10 @@ export default class LogarithmicScale extends Scale {
   }
 
   override getLabelForValue(value: number): string {
+    const formatter = this.options.formatter;
+    if (formatter) {
+      return formatter(value);
+    }
     return value === undefined
       ? "0"
       : formatNumber(
